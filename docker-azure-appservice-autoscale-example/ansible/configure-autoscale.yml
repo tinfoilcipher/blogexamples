@@ -1,0 +1,34 @@
+---
+- name: configure-autoscale-playbook
+  hosts: localhost
+  gather_facts: false
+  any_errors_fatal: true
+  vars_files:
+    - ansible_vars.yml
+
+  tasks:
+  - name: Configure Autoscale Profile
+    azure_rm_autoscale:
+        target: "{{ '/subscriptions/' + tf_subscriptionid + '/resourceGroups/' + tf_container_resourcegroup + '/providers/Microsoft.Web/serverfarms/' + tf_container_app_service_plan_name }}"
+        enabled: true
+        profiles:
+        - count: '1'
+          name: Auto scale rule via Ansible
+          rules:
+          - time_aggregation: Average
+            time_window: 10
+            direction: Increase
+            metric_name: 'CPU Percentage'
+            metric_resource_uri: "{{ '/subscriptions/' + tf_subscriptionid + '/resourceGroups/' + tf_container_resourcegroup + '/providers/Microsoft.Web/serverfarms/' + tf_container_app_service_plan_name }}"
+            value: '1'
+            threshold: 70
+            cooldown: 5
+            time_grain: 1
+            statistic: Average
+            operator: GreaterThan
+            type: ChangeCount
+          max_count: '10'
+          min_count: '1'
+        name: scale
+        resource_group: "{{ tf_container_resourcegroup }}"
+...

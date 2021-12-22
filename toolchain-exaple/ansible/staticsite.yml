@@ -1,0 +1,31 @@
+---
+- name: Build and configure static website
+  hosts: all
+  gather_facts: false
+  connection: local
+  tasks:
+  
+    - name: Clone static site content
+      git:
+        repo: git@github.com:tinfoilcipher/nginx-static-files.git
+        dest: /tmp/staticsite/index.html
+        accept_hostkey: yes
+
+    - name: Copy static site content
+      become: true
+      copy:
+        src: /tmp/staticsite/index.html
+        dest: /var/www/html/index.html
+    
+    - name: Delete tmp data
+      become: true
+      file:
+        path: /tmp/staticsite
+        state: absent
+
+    - name: Restart NGINX to load site
+      become: true
+      service:
+        name: nginx
+        state: restarted
+...

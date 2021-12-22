@@ -1,0 +1,12 @@
+pipelines:
+  branches:
+    '*':
+    - step:
+        name: Terraform Apply
+        image: hashicorp/terraform:0.14.5
+        script:
+          - terraform init -backend-config="access_key=$TF_VAR_AWS_ACCESS_KEY" -backend-config="secret_key=$TF_VAR_AWS_SECRET_KEY"
+          - terraform workspace select $BITBUCKET_BRANCH
+          - terraform validate
+          - terraform plan
+          - terraform apply -input=false -auto-approve

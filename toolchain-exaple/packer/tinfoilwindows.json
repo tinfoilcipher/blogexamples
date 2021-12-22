@@ -1,0 +1,49 @@
+{
+    "variables": {
+        "client_id": "YOUR-CLIENT-ID-HERE",
+        "client_secret": "YOUR-CLIENT-SECRET-HERE",
+        "subscription_id": "YOUR-SUBSCRIPTION-ID-HERE",
+        "location": "uksouth",
+        "image_name": "tinfoilwindows",
+        "resource_group": "tinfoil_images_rg",
+        "_comment": "AVOID USING A VM SIZE WITH TOO LITTLE RAM, WINRM IS SUPER FLAKY"
+        "vm_size": "Standard_B2ms",
+        "_comment": "DON'T PUT THE BELOW CREDS IN PLAINTEXT IN PRODUCTION!!!",
+        "winrm_user": "Administrator",
+        "winrm_pass": "Sup3rS3cr3tPas5w0rd!"
+    },
+    "builders": [{
+            "type": "azure-arm",
+            "client_id": "{{user `client_id`}}",
+            "client_secret": "{{user `client_secret`}}",
+            "subscription_id": "{{user `subscription_id`}}",
+            "managed_image_resource_group_name": "{{user `resource_group`}}",
+            "managed_image_name": "{{user `image_name`}}",
+            "os_type": "Windows",
+            "image_publisher": "MicrosoftWindowsServer",
+            "image_offer": "WindowsServer",
+            "image_sku": "2016-Datacenter-Server-Core",
+            "location": "{{user `location`}}",
+            "vm_size": "{{user `vm_size`}}",
+            "communicator": "winrm",
+            "winrm_username": "{{user `winrm_user`}}",
+            "winrm_password": "{{user `winrm_pass`}}",
+            "winrm_port": "5986",
+            "winrm_use_ssl": true,
+            "winrm_insecure": true,
+            "winrm_timeout": "20m",
+            "azure_tags": {
+                "Resource": "Compute"
+            }
+        }
+    ],
+    "provisioners": [{
+            "type": "powershell",
+            "inline": [
+                "if( Test-Path $Env:SystemRoot\\windows\\system32\\Sysprep\\unattend.xml ){ rm $Env:SystemRoot\\windows\\system32\\Sysprep\\unattend.xml -Force}",
+                "& $env:SystemRoot\\System32\\Sysprep\\Sysprep.exe /oobe /generalize /quiet /quit /mode:vm",
+                "while($true) { $imageState = Get-ItemProperty HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Setup\\State | Select ImageState; Write-Output $imageState.ImageState; if($imageState.ImageState -ne 'IMAGE_STATE_GENERALIZE_RESEAL_TO_OOBE') { Start-Sleep -s 10 } else { break } }"
+            ]
+        }
+    ]
+}

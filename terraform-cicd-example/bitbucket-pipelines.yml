@@ -1,0 +1,37 @@
+image: hashicorp/terraform:0.14.5
+
+# Pipeline update for https://www.tinfoilcipher.co.uk/wp-admin/post.php?post=1813
+# If you're looking for the old pipeline from https://www.tinfoilcipher.co.uk/wp-admin/post.php?post=1149
+# use the below, but it's not as good!
+
+#pipelines:
+#  branches:
+#    master:
+#    - step:
+#        script:
+#          - terraform init -backend-config="access_key=$AWS_ACCESS_KEY_ID" -backend-config="secret_key=$AWS_SECRET_ACCESS_KEY"
+#          - terraform validate
+#          - terraform plan
+#          - terraform apply -input=false -auto-approve
+
+pipelines:
+  branches:
+    master:
+    - step:
+        name: Speculative Plan
+        script:
+          - mkdir -p terraform/plan
+          - cd terraform
+          - terraform init -backend-config="access_key=$AWS_ACCESS_KEY_ID" -backend-config="secret_key=$AWS_SECRET_ACCESS_KEY"
+          - terraform workspace select $BITBUCKET_BRANCH || terraform workspace new $BITBUCKET_BRANCH
+          - terraform validate
+          - terraform plan -out plan/$BITBUCKET_COMMIT.plan
+        artifacts:
+          - terraform/plan/**
+          - terraform/.terraform/**
+    - step:
+         name: Apply Configuration
+         trigger: manual
+         script:
+           - cd terraform
+           - terraform apply -input=false -auto-approve plan/$BITBUCKET_COMMIT.plan

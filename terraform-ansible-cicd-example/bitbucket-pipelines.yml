@@ -1,0 +1,19 @@
+pipelines:
+  branches:
+    master:
+    - step:
+        name: Terraform Configuration
+        image: hashicorp/terraform:full
+        script:
+          - terraform init -backend-config="access_key=$TF_VAR_AWS_ACCESS_KEY" -backend-config="secret_key=$TF_VAR_AWS_SECRET_KEY"
+          - terraform validate
+          - terraform plan
+          - terraform apply -input=false -auto-approve -var 'vault_token=$TF_VAR_VAULT_TOKEN'
+    - step:
+        name: Ansible Configuration
+        image: python:2.7.13
+        caches:
+          - pip
+        script:
+          - pip install -r requirements.txt
+          - ansible-playbook configure-ec2.yml

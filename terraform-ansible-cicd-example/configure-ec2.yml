@@ -1,0 +1,57 @@
+---
+- name: Lookup EC2 Instance Data
+  hosts: localhost
+  gather_facts: false
+  connection: local
+  vars:
+    aws:
+      access_key: '{{ lookup("env", "ANS_AWS_ACCESS_KEY") }}'
+      secret_key: '{{ lookup("env", "ANS_AWS_SECRET_KEY") }}'
+      region: 'eu-west-2'
+  tasks:
+    - name: Gather EC2 Facts
+      ec2_instance_info:
+        region: "{{ aws.region }}"
+        filters:
+          instance-state-name: [ "running" ]
+        aws_access_key: "{{ aws.access_key }}"
+        aws_secret_key: "{{ aws.secret_key }}"
+      delegate_to: localhost
+      register: ec2_instances
+    
+    - name: Determine Public IPs from EC2 Facts
+      set_fact:
+        ec2_public_ips: "{{ ec2_instances | json_query('instances[*].public_ip_address') }} "
+
+    - name: Add New Instances to Ephemeral Inventory
+      add_host:
+        name: "{{ item }}"
+        groups: ec2_just_created
+        ansible_ssh_extra_args: '-o StrictHostKeyChecking=no'
+        ansible_user: ubuntu
+      with_items: "{{ ec2_public_ips }}"
+
+- name: Configure EC2 Instances
+  hosts: ec2_just_created
+  connection: ssh
+  gather_facts: false
+  tasks:
+    - name: Update apt Cache
+      apt:
+        update_cache: yes
+        force_apt_get: yes
+      become: yes
+      become_method: sudo
+      become_user: root
+
+    - name: Install LEMP Stack on Instances
+      apt:
+        name:
+        - nginx
+        - mariadb-server
+        - php-fpm
+        force_apt_get: yes
+      become: yes
+      become_method: sudo
+      become_user: root
+...
