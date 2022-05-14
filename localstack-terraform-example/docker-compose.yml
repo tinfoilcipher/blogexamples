@@ -1,0 +1,12 @@
+version: "2.1"
+services:
+  localstack:
+    image: localstack/localstack
+    container_name: localstack
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=s3,dynamodb
+      - DEFAULT_REGION=eu-west-1
+      - DATA_DIR=/tmp/localstack
+      - DOCKER_HOST=unix:///var/run/docker.sock
