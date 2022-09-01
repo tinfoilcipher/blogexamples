@@ -6,4 +6,4 @@ To run you will first need a running kubernetes cluster, ideally EKS to do a sec
 
 If using a local environment you will need to do some credential configuration as covered [here](https://crossplane.io/docs/v1.9/cloud-providers/aws/aws-provider.html#optional-setup-aws-provider-manually) when prompted in the article.
 
-Files intended for use in conjuction with the blog post **Crossplane - Infrastructure as Code for Kubernetes Platform Teams** https://www.tinfoilcipher.co.uk/2022/08/31/crossplane---infrastructure-as-code-for-kubernetes-platform-teams/
+Files intended for use in conjuction with the blog post **Crossplane - Infrastructure as Code for Kubernetes Platform Teams** https://www.tinfoilcipher.co.uk/2022/09/01/crossplane-infrastructure-as-code-for-kubernetes-platform-teams/
