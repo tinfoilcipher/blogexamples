@@ -1,0 +1,56 @@
+apiVersion: ec2.aws.crossplane.io/v1beta1
+kind: VPC
+metadata:
+  name: tinfoil-vpc
+  namespace: crossplane-resources
+spec:
+  forProvider:
+    region: eu-west-1
+    cidrBlock: 10.0.0.0/16
+    enableDnsSupport: true
+    enableDnsHostNames: true
+    instanceTenancy: default
+  providerConfigRef:
+    name: crossplane-provider-config
+---
+apiVersion: ec2.aws.crossplane.io/v1beta1
+kind: Subnet
+metadata:
+  name: tinfoil-subnet-a
+spec:
+  forProvider:
+    region: eu-west-1
+    cidrBlock: 10.0.10.0/24
+    vpcIdRef:
+      name: tinfoil-vpc
+    availabilityZone: eu-west-1a
+  providerRef:
+    name: provider-aws
+---
+apiVersion: ec2.aws.crossplane.io/v1beta1
+kind: Subnet
+metadata:
+  name: tinfoil-subnet-b
+spec:
+  forProvider:
+    region: eu-west-1
+    cidrBlock: 10.0.20.0/24
+    vpcIdRef:
+      name: tinfoil-vpc
+    availabilityZone: eu-west-1b
+  providerRef:
+    name: provider-aws
+---
+apiVersion: ec2.aws.crossplane.io/v1beta1
+kind: Subnet
+metadata:
+  name: tinfoil-subnet-c
+spec:
+  forProvider:
+    region: eu-west-1
+    cidrBlock: 10.0.30.0/24
+    vpcIdRef:
+      name: tinfoil-vpc
+    availabilityZone: eu-west-1c
+  providerRef:
+    name: provider-aws
