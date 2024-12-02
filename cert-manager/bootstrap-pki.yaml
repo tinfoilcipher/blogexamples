@@ -15,7 +15,7 @@ metadata:
 spec:
   isCA: true
   duration: 87600h #--10 Years
-  commonName: root-ca.tinfoilcipher.co.uk
+  commonName: root-ca.tinfoilcipher.co.uk #--Change to your domain as appropriate
   secretName: root-ca-secret
   privateKey:
     algorithm: ECDSA
