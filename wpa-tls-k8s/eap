@@ -1,0 +1,26 @@
+eap {
+    default_eap_type = tls
+    timer_expire = 60
+    ignore_unknown_eap_types = no
+    cisco_accounting_username_bug = no
+    max_sessions = ${max_requests}
+    tls-config tls-common {
+        private_key_file = /etc/ssl/private/tls.key
+        certificate_file = /etc/ssl/certs/tls.crt
+        ca_file = /etc/ssl/certs/ca.crt
+        dh_file = ${certdir}/dh
+        random_file = /dev/urandom
+        ca_path = ${cadir}
+        cipher_list = "DEFAULT"
+        ecdh_curve = "prime256v1"
+        cache {
+            enable = no
+        }
+        ocsp {
+            enable = no
+        }
+    }
+    tls {
+        tls = tls-common
+    }
+}
