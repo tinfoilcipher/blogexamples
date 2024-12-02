@@ -13,7 +13,7 @@ metadata:
   name: tinfoilcipher-root-ca-cert
   namespace: cert-manager
 spec:
-  isCA: true
+  isCA: true #--Specifies v3 CA constraint
   duration: 87600h #--10 Years
   commonName: root-ca.tinfoilcipher.co.uk #--Change to your domain as appropriate
   secretName: root-ca-secret
