@@ -1,0 +1,30 @@
+#--application.yaml
+
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: insecureapp
+  namespace: insecurens
+spec:
+  isCA: false #--Specifies not a CA cert
+  duration: 2160h #--90 days
+  subject:
+    organizations:
+      - tinfoilcipher
+    organizationalUnits:
+      - Ops
+    countries:
+      - GB
+  dnsNames:
+    - insecureapp.tinfoilcipher.co.uk
+  secretName: insecureapp-certificate
+  usages:
+    - digital signature #--Specifices key contstraints as a server certificate
+  privateKey:
+    algorithm: RSA
+    encoding: PKCS1
+    size: 2048
+  issuerRef:
+    name: ca-issuer          #--Issuer
+    kind: ClusterIssuer      #--details
+    group: cert-manager.io
