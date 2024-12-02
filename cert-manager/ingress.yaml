@@ -1,16 +1,18 @@
+#--ingress.yaml
+
 apiVersion: v1
 items:
 - apiVersion: networking.k8s.io/v1
   kind: Ingress
   metadata:
     annotations:
-      cert-manager.io/cluster-issuer: ca-issuer
+      cert-manager.io/cluster-issuer: ca-issuer #--Name of your issuer here
     name: someapp
     namespace: someapp-namespace
   spec:
     ingressClassName: nginx
     rules:
-    - host: someapp.tinfoilcipher.co.uk
+    - host: someapp.tinfoilcipher.co.uk #--Your desired HTTP hostname here
       http:
         paths:
         - backend:
@@ -22,5 +24,6 @@ items:
           pathType: Prefix
     tls:
     - hosts:
-      - someapp.tinfoilcipher.co.uk
-      secretName: someapp-certificate #--Dynamically generated based on the ingress name
+      - someapp.tinfoilcipher.co.uk #--Must match above, will be on the certificate SAN list
+      secretName: someapp-certificate #--Secret dynamically created based on the ingress 
+                                      #--name, I.E. "name-certificate"
