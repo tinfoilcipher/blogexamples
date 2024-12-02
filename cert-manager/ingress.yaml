@@ -1,0 +1,26 @@
+apiVersion: v1
+items:
+- apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    annotations:
+      cert-manager.io/cluster-issuer: ca-issuer
+    name: someapp
+    namespace: someapp-namespace
+  spec:
+    ingressClassName: nginx
+    rules:
+    - host: someapp.tinfoilcipher.co.uk
+      http:
+        paths:
+        - backend:
+            service:
+              name: somebackend
+              port:
+                number: 8080
+          path: /
+          pathType: Prefix
+    tls:
+    - hosts:
+      - someapp.tinfoilcipher.co.uk
+      secretName: someapp-certificate #--Dynamically generated based on the ingress name
