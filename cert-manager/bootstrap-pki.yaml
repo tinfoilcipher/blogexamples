@@ -1,0 +1,36 @@
+#--Create a self-signed, cluster-wide Certificate Issuer
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: selfsigned-issuer
+spec:
+  selfSigned: {}
+---
+#--Create a Root CA Certificate and Key Pair, with a long lifetime
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: tinfoilcipher-root-ca-cert
+  namespace: cert-manager
+spec:
+  isCA: true
+  duration: 87600h #--10 Years
+  commonName: root-ca.tinfoilcipher.co.uk #--Change to your domain as appropriate
+  secretName: root-ca-secret
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+  issuerRef:
+    name: selfsigned-issuer
+    kind: ClusterIssuer
+    group: cert-manager.io
+---
+#--Create a cluster-wide Certificate Issuer, signed by the Root CA Certificate
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: ca-issuer
+  namespace: cert-manager
+spec:
+  ca:
+    secretName: root-ca-secret
