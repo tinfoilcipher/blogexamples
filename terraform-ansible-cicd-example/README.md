@@ -6,4 +6,4 @@ This example will also require a funcional instance of Vault with working secret
 
 Pipeline leverages Hashicorp's official Terraform Docker Image and Python's official 2.7.13 Image for use in build process.
 
-Files intended for use in conjuction with the blog post [BitBucket, Terraform and Ansible – Extending Infrastructure CI/CD In To Configuration Management](https://www.tinfoilcipher.co.uk/bitbucket-terraform-and-ansible-extending-infrastructure-ci-cd-in-to-configuration-management).
+Files intended for use in conjuction with the blog post [BitBucket, Terraform and Ansible – Extending Infrastructure CI/CD In To Configuration Management](https://tinfoilcipher.co.uk/2020/05/13/bitbucket-terraform-and-ansible-extending-infrastructure-ci-cd-in-to-configuration-management).
