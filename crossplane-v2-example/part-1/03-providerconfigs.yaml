@@ -1,0 +1,18 @@
+apiVersion: aws.m.upbound.io/v1beta1 #--For namespaced ProviderConfigUsages. For Cluster-wide use aws.upbound.io
+kind: ProviderConfig
+metadata:
+  name: aws-s3
+  namespace: tenant1 #--Scoped to the tenants namespace. Remove this field for cluster-wide ProviderConfigs
+spec:
+  credentials:
+    source: IRSA #--Look up credentials from the environment, using IRSA. As our Provider already has
+                 #--this loaded in it's environment, authentication is transparent
+---
+apiVersion: aws.m.upbound.io/v1beta1
+kind: ProviderConfig
+metadata:
+  name: aws-s3
+  namespace: tenant2
+spec:
+  credentials:
+    source: IRSA

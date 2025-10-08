@@ -1,0 +1,18 @@
+apiVersion: pkg.crossplane.io/v1beta1
+kind: DeploymentRuntimeConfig
+metadata:
+  name: aws
+spec:
+  serviceAccountTemplate:
+    metadata:
+      annotations:
+        eks.amazonaws.com/role-arn: arn:aws:iam::123456789012:role/crossplane-example-role #--Your IRSA role here
+---
+apiVersion: pkg.crossplane.io/v1
+kind: Provider
+metadata:
+  name: provider-aws-s3
+spec:
+  package: ghcr.io/crossplane-contrib/provider-aws-s3:v2.1.0 # Installs the aws-s3 provider. Releases are listed at https://github.com/orgs/crossplane-contrib/packages.
+  runtimeConfigRef:                                          # There is some confusion about where to install packages. The docs say to use xpkg.crossplane.io since Crossplane v1.2 (with the old
+    name: aws #--Links to the Runtime Config above           # source being xpkg.upbound.io.). However GitHub hosts them at ghcr.io/crossplane-contrib. Muddled advice!
