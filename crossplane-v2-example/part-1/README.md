@@ -8,4 +8,4 @@ Realistically you could follow this article using a local cluster without IRSA, 
 
 If you have access to an AWS environment and don't know quite how to get started standing up a Kubernetes cluster and an IRSA integration, I have provided a [terraform module](https://registry.terraform.io/modules/tinfoilcipher/eks-development-cluster/aws/latest) to get started, be aware that this is **NOT FOR PRODUCTION USE**!!!
 
-Files intended for use in conjuction with the blog post [Crossplane V2 – Infrastructure as Code for Kubernetes Platform Teams Part 1](https://tinfoilcipher.co.uk/2025/10/08/crossplane-v2-iac-for-k8s-platform-teams-part-1).
+Files intended for use in conjuction with the blog post [Crossplane v2 – Infrastructure as Code for Kubernetes Platform Teams Part 1](https://tinfoilcipher.co.uk/2025/10/08/crossplane-v2-iac-for-k8s-platform-teams-part-1).
