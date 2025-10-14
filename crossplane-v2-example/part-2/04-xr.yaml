@@ -1,0 +1,31 @@
+apiVersion: aws.platform.tinfoilcipher.com/v1alpha1 #--XRD endpoint
+kind: S3Bucket #--XRD Kind
+metadata:
+  name: tinfoil-example-bucket-14-10-25-tenant-1 #--Bucket name
+  namespace: tenant1 #--Tenant namespace
+spec:
+  #--Only explicit input values can be passed to "parameters" as defined in the XRD
+  parameters:
+    bucketName: tinfoil-example-bucket-14-10-25-tenant-1
+    region: eu-west-2
+    versioning: Enabled
+    kmsKeyID: 15abcf4-15c5-1fe6-afbd-584bcfe57168
+  #--Any list of tags can be passed as input values to "tags", as defined in the XRD
+  tags:
+    environment: dev
+    department: devops
+---
+apiVersion: aws.platform.tinfoilcipher.com/v1alpha1
+kind: S3Bucket
+metadata:
+  name: tinfoil-example-bucket-14-10-25-tenant-2
+  namespace: tenant2
+spec:
+  parameters:
+    bucketName: tinfoil-example-bucket-14-10-25-tenant-2
+    region: eu-west-2
+    versioning: Enabled
+    kmsKeyID: beabc55-5e11-15ba-a66d-1564cbdd5248
+  tags:
+    environment: dev
+    department: devops

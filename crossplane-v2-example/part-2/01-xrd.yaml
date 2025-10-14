@@ -1,0 +1,40 @@
+apiVersion: apiextensions.crossplane.io/v2
+kind: CompositeResourceDefinition
+metadata:
+  name: s3buckets.aws.platform.tinfoilcipher.com #--Platform specific endpoint
+spec:
+  group: aws.platform.tinfoilcipher.com
+  names:
+    kind: S3Bucket #--Object Kind, E.G. kubectl get S3Bucket
+    plural: s3buckets #--Kind plural. E.G. kubectl get s3buckets
+  scope: Namespaced #--Namespaced or cluster-wide. For a multi tenant system, this should be offered to tenant namespaces
+  versions:
+    - name: v1alpha1 #--Current version. This should be incremented when changes are released and the spec is altered
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                parameters: #--Parameters object, defines input params
+                  type: object
+                  properties:
+                    bucketName: #--User input
+                      type: string
+                    region: #--User input
+                      type: string
+                    versioning: #--User input
+                      type: bool
+                    kmsKeyID: #--User input
+                      type: number
+                  required: #--Mandatory inputs
+                    - bucketName
+                    - region
+                    - kmsKeyID
+                tags: #--Tags objects, defines a blank map for tags
+                  type: object
+                  additionalProperties:
+                    type: string
+              required: #--Mandatory objects. Tags are optional
+                - parameters
