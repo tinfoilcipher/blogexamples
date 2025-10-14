@@ -1,0 +1,95 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: s3bucket.aws.platform.tinfoilcipher.com #--Composition name
+  labels:
+    aws.platform.tinfoilcipher.com/composition: s3bucket #--Label to identify this Composition
+spec:
+  compositeTypeRef:
+    apiVersion: aws.platform.tinfoilcipher.com/v1alpha1 #--XRD Endpoint
+    kind: S3Bucket #--XRD Kind
+  mode: Pipeline
+  pipeline: #--Pipeline of steps to create Managed Resources
+    - step: create-bucket #--Pipeline step (everything here is handled in one big step)
+      functionRef:
+        name: patch-and-transform #--Previously created function
+      input:
+        apiVersion: pt.fn.crossplane.io/v1beta1
+        kind: Resources
+        resources:
+
+        #--Managed resources to be created--#
+        #--https://marketplace.upbound.io/providers/upbound/provider-aws-s3/v2.1.1/resources/s3.aws.m.upbound.io/Bucket/v1beta1
+        - name: s3-bucket
+          base:
+            apiVersion: s3.aws.m.upbound.io/v1beta1  #--Namespaced S3 endpoint
+            kind: Bucket #--S3 Bucket resource
+            spec:
+              forProvider:
+                #--Static configuration elements
+                forceDestroy: false
+              providerConfigRef:
+                kind: ProviderConfig
+                name: aws-s3 #--Existing Namespaced ProviderConfig
+          #--Patches take input values from an XR and pass them through the XRD spec and in to the Composition.
+          #--E.G. the value in spec.parameters.bucketName is used to patch spec.parameters.region
+          patches:
+            - fromFieldPath: "spec.parameters.bucketName"
+              toFieldPath: "metadata.name"
+              #--Applies the label aws.platform.tinfoilcipher.com/bucket_name based on input value to the newly created bucket object.
+              #--Since Crossplane Managed Resources are just regular k8s objects, they can have labels applied to them like any
+              #--other object.
+            - fromFieldPath: "spec.parameters.bucketName"
+              toFieldPath: "metadata.labels['aws.platform.tinfoilcipher.com/bucket_name']"
+            - fromFieldPath: "spec.parameters.region"
+              toFieldPath: "spec.forProvider.region"
+            - fromFieldPath: "spec.tags"
+              toFieldPath: "spec.forProvider.tags"
+
+        #--A second resource is created in the pipeline. Configuring versioning
+        #--https://marketplace.upbound.io/providers/upbound/provider-aws-s3/v2.1.1/resources/s3.aws.m.upbound.io/BucketVersioning/v1beta1
+        - name: s3-bucket-versioning
+          base:
+            apiVersion: s3.aws.m.upbound.io/v1beta1
+            kind: BucketVersioning
+            spec:
+              providerConfigRef:
+                kind: ProviderConfig
+                name: aws-s3
+          patches:
+            - fromFieldPath: "spec.parameters.region"
+              toFieldPath: "spec.forProvider.region"
+            - fromFieldPath: "spec.parameters.versioning"
+              toFieldPath: "spec.forProvider.versioningConfiguration.status"
+            - fromFieldPath: "spec.parameters.bucketName"
+              toFieldPath: "metadata.labels['aws.platform.tinfoilcipher.com/bucket_name']"
+              #--The bucketSelector function matches the label for our existing Bucket resource created in the previous
+              #--Resource. Labels are the preferred method for looking up existing or newly provisioned Managed Resources.
+            - fromFieldPath: "spec.parameters.bucketName"
+              toFieldPath: "spec.forProvider.bucketSelector.matchLabels['aws.platform.tinfoilcipher.com/bucket_name']"
+
+        #--A third resource is created in the pipeline. Configuring encryption with a provided key
+        #--https://marketplace.upbound.io/providers/upbound/provider-aws-s3/v2.1.1/resources/s3.aws.m.upbound.io/BucketServerSideEncryptionConfiguration/v1beta1
+        - name: s3-bucket-encryption
+          base:
+            apiVersion: s3.aws.m.upbound.io/v1beta1
+            kind: BucketServerSideEncryptionConfiguration
+            spec:
+              forProvider:
+                #--Static configuration elements
+                rule:
+                  - applyServerSideEncryptionByDefault:
+                      sseAlgorithm: aws:kms
+              providerConfigRef:
+                kind: ProviderConfig
+                name: aws-s3
+          patches:
+            - fromFieldPath: "spec.parameters.region"
+              toFieldPath: "spec.forProvider.region"
+            - fromFieldPath: "spec.parameters.bucketName"
+              toFieldPath: "metadata.labels['aws.platform.tinfoilcipher.com/bucket_name']"
+            - fromFieldPath: "spec.parameters.kmsKeyID"
+              toFieldPath: "spec.forProvider.rule[0].applyServerSideEncryptionByDefault.kmsMasterKeyId" #--KMS Key Input
+              #--The same label lookup as before to locate the correct Bucket
+            - fromFieldPath: "spec.parameters.bucketName"
+              toFieldPath: "spec.forProvider.bucketSelector.matchLabels['aws.platform.tinfoilcipher.com/bucket_name']"
