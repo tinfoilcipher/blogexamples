@@ -1,4 +1,4 @@
-# crossplane-example
+# crossplane-v2-example-part-1
 
 Example code to deploy Crossplane V2 configurations, AWS integrations and AWS resources.
 
