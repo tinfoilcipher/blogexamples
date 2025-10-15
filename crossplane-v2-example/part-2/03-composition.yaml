@@ -14,7 +14,7 @@ spec:
       functionRef:
         name: patch-and-transform #--Previously created function
       input:
-        apiVersion: pt.fn.crossplane.io/v1beta1
+        apiVersion: pt.fn.crossplane.io/v1beta1 #--Function (patch-and-transform) endpoint
         kind: Resources
         resources:
 
@@ -32,7 +32,7 @@ spec:
                 kind: ProviderConfig
                 name: aws-s3 #--Existing Namespaced ProviderConfig
           #--Patches take input values from an XR and pass them through the XRD spec and in to the Composition.
-          #--E.G. the value in spec.parameters.bucketName is used to patch spec.parameters.region
+          #--E.G. the XRs input value in spec.parameters.region is used to patch spec.forProvider.region in the Composition
           patches:
             - fromFieldPath: "spec.parameters.bucketName"
               toFieldPath: "metadata.name"
@@ -64,7 +64,7 @@ spec:
             - fromFieldPath: "spec.parameters.bucketName"
               toFieldPath: "metadata.labels['aws.platform.tinfoilcipher.com/bucket_name']"
               #--The bucketSelector function matches the label for our existing Bucket resource created in the previous
-              #--Resource. Labels are the preferred method for looking up existing or newly provisioned Managed Resources.
+              #--action. Labels are the preferred method for looking up existing or newly provisioned Managed Resources.
             - fromFieldPath: "spec.parameters.bucketName"
               toFieldPath: "spec.forProvider.bucketSelector.matchLabels['aws.platform.tinfoilcipher.com/bucket_name']"
 
