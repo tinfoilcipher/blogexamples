@@ -1,14 +1,14 @@
-apiVersion: s3.aws.m.upbound.io/v1beta1 #--Namespaced CRD. For a cluster-wide resource, using a cluster-wide provider, use s3.aws.upbound.io/v1beta1
+apiVersion: s3.aws.m.upbound.io/v1beta1 #--Namespaced CRD. Although cluster-wide ProviderConfig, our resources are namespaced
 kind: Bucket
 metadata:
   name: tinfoil-example-bucket-08-10-25-tenant-1 #--S3 Bucket name
-  namespace: tenant1 #--Namespace
+  namespace: tenant1 #--Provisioning Namespace
 spec:
   forProvider:
     forceDestroy: true #--S3 configuration parameter
     region: eu-west-2 #--AWS Region
   providerConfigRef:
-    kind: ProviderConfig
+    kind: ClusterProviderConfig
     name: aws-s3 #--Provider config as defined earlier
 ---
 apiVersion: s3.aws.m.upbound.io/v1beta1
@@ -21,5 +21,5 @@ spec:
     forceDestroy: true
     region: eu-west-2
   providerConfigRef:
-    kind: ProviderConfig
-    name: aws-s3 #--Provider config has the same name in each Namespace
+    kind: ClusterProviderConfig
+    name: aws-s3 #--Provider config as defined earlier
