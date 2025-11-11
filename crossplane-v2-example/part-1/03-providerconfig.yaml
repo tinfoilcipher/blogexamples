@@ -1,0 +1,8 @@
+apiVersion: aws.m.upbound.io/v1beta1 #--Namespaced endpoint. Allows namespaced MR creation.
+kind: ClusterProviderConfig          
+metadata:
+  name: aws-s3
+spec:
+  credentials:
+    source: IRSA #--Look up credentials from the environment, using IRSA. As our Provider already has
+                 #--this loaded in it's environment, authentication is transparent

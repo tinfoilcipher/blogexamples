@@ -10,7 +10,7 @@ spec:
     kind: S3Bucket #--XRD Kind
   mode: Pipeline
   pipeline: #--Pipeline of steps to create Managed Resources
-    - step: create-bucket #--Pipeline step (everything here is handled in one big step)
+    - step: create-bucket #--Pipeline step (everything in this example is handled in one big step)
       functionRef:
         name: patch-and-transform #--Previously created function
       input:
@@ -29,16 +29,18 @@ spec:
                 #--Static configuration elements
                 forceDestroy: false
               providerConfigRef:
-                kind: ProviderConfig
-                name: aws-s3 #--Existing Namespaced ProviderConfig
-          #--Patches take input values from an XR and pass them through the XRD spec and in to the Composition.
-          #--E.G. the XRs input value in spec.parameters.region is used to patch spec.forProvider.region in the Composition
+                kind: ClusterProviderConfig
+                name: aws-s3 #--Existing ClusterProviderConfig
+          #--Patches take input values from an XR and pass them through
+          #--the XRD spec and in to the Composition.
+          #--E.G. the XRs input value in spec.parameters.region is used to
+          #--patch spec.forProvider.region in the Composition
           patches:
             - fromFieldPath: "spec.parameters.bucketName"
               toFieldPath: "metadata.name"
-              #--Applies the label aws.platform.tinfoilcipher.com/bucket_name based on input value to the newly created bucket object.
-              #--Since Crossplane Managed Resources are just regular k8s objects, they can have labels applied to them like any
-              #--other object.
+            #--Applies the label aws.platform.tinfoilcipher.com/bucket_name based on input value to the newly created bucket object.
+            #--Since Crossplane Managed Resources are just regular k8s objects, they can have labels applied to them like any
+            #--other object.
             - fromFieldPath: "spec.parameters.bucketName"
               toFieldPath: "metadata.labels['aws.platform.tinfoilcipher.com/bucket_name']"
             - fromFieldPath: "spec.parameters.region"
@@ -54,7 +56,7 @@ spec:
             kind: BucketVersioning
             spec:
               providerConfigRef:
-                kind: ProviderConfig
+                kind: ClusterProviderConfig
                 name: aws-s3
           patches:
             - fromFieldPath: "spec.parameters.region"
@@ -63,8 +65,8 @@ spec:
               toFieldPath: "spec.forProvider.versioningConfiguration.status"
             - fromFieldPath: "spec.parameters.bucketName"
               toFieldPath: "metadata.labels['aws.platform.tinfoilcipher.com/bucket_name']"
-              #--The bucketSelector function matches the label for our existing Bucket resource created in the previous
-              #--action. Labels are the preferred method for looking up existing or newly provisioned Managed Resources.
+            #--The bucketSelector function matches the label for our existing Bucket resource created in the previous
+            #--action. Labels are the preferred method for looking up existing or newly provisioned Managed Resources.
             - fromFieldPath: "spec.parameters.bucketName"
               toFieldPath: "spec.forProvider.bucketSelector.matchLabels['aws.platform.tinfoilcipher.com/bucket_name']"
 
@@ -81,7 +83,7 @@ spec:
                   - applyServerSideEncryptionByDefault:
                       sseAlgorithm: aws:kms
               providerConfigRef:
-                kind: ProviderConfig
+                kind: ClusterProviderConfig
                 name: aws-s3
           patches:
             - fromFieldPath: "spec.parameters.region"
@@ -90,6 +92,6 @@ spec:
               toFieldPath: "metadata.labels['aws.platform.tinfoilcipher.com/bucket_name']"
             - fromFieldPath: "spec.parameters.kmsKeyID"
               toFieldPath: "spec.forProvider.rule[0].applyServerSideEncryptionByDefault.kmsMasterKeyId" #--KMS Key Input
-              #--The same label lookup as before to locate the correct Bucket
+            #--The same label lookup as before to locate the correct Bucket
             - fromFieldPath: "spec.parameters.bucketName"
               toFieldPath: "spec.forProvider.bucketSelector.matchLabels['aws.platform.tinfoilcipher.com/bucket_name']"
