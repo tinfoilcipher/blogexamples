@@ -9,7 +9,7 @@ spec:
     region: eu-west-2 #--AWS Region
   providerConfigRef:
     kind: ClusterProviderConfig
-    name: aws-s3 #--Provider config as defined earlier
+    name: aws #--ProviderConfig as defined earlier, calling the S3 service
 ---
 apiVersion: s3.aws.m.upbound.io/v1beta1
 kind: Bucket
@@ -22,4 +22,4 @@ spec:
     region: eu-west-2
   providerConfigRef:
     kind: ClusterProviderConfig
-    name: aws-s3 #--Provider config as defined earlier
+    name: aws
